@@ -1,0 +1,25 @@
+pipeline{
+	agent any
+	tools{
+		maven 'Shubh_Maven'
+	}
+	stages{
+		stage ('Build'){
+			steps{
+				sh 'mvn clean package'
+			}
+			post{
+				success{
+					echo "Archive Artifacts"
+					archiveArtifacts artifacts: '**/target/*.war'
+				}
+			}
+		}
+		stage ('Deploy on TomCat Server'){
+			steps{
+				deploy adapters: [tomcat9(credentialsId: '43de2702-3412-40a2-b2e2-19f3b2e83c81', path: '', url: 'http://localhost:9999')], contextPath: null, war: '**/*.war'
+			}
+
+		}
+	}
+}
