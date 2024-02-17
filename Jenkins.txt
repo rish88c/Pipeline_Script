@@ -1,34 +1,25 @@
-pipeline {
-    agent any
-    tools {
-        maven 'Rish_Maven'
-    }
-    stages {
-        stage ('Build') {
-            steps {
-                bat 'mvn clean package'
-            }
-            post {
-                success {
-                    echo "Archive Artifacts"
-                    archiveArtifacts artifacts: '**/target/*.war'
-                }
-            }
-        }
-        stage ('Deploy on TomCat Server') {
-            steps {
-                script {
-                    // Deploy to Tomcat
-                    if (isUnix()) {
-                        // Unix-based system
-                        sh 'deploy adapters=[tomcat9(credentialsId: \'6e321be2-33ce-4fca-ad82-176e81e41b28\', path: \'\', url: \'http://localhost:9999\')], contextPath: \'sample\', war: \'**/*.war\''
-                    } else {
-                        // Windows system
-                        bat 'deploy adapters=[tomcat9(credentialsId: \'6e321be2-33ce-4fca-ad82-176e81e41b28\', path: \'\', url: \'http://localhost:9999\')], contextPath: \'sample\', war: \'**/*.war\''
-                    }
-                }
-            }
-        }
-    }
-}
+pipeline{
+	agent any
+	tools{
+		maven 'Rish_Maven'
+	}
+	stages{
+		stage ('Build'){
+			steps{
+				bat 'mvn clean package'
+			}
+			post{
+				success{
+					echo "Archive Artifacts"
+					archiveArtifacts artifacts: '**/target/*.war'
+				}
+			}
+		}
+		stage ('Deploy on TomCat Server'){
+			steps{
+				deploy adapters: [tomcat9(credentialsId: '6e321be2-33ce-4fca-ad82-176e81e41b28', path: '', url: 'http://localhost:9999')], contextPath: 'sample', war: '**/*.war'
+			}
 
+		}
+	}
+}
